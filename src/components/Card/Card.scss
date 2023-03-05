@@ -1,0 +1,19 @@
+.cardWrapper {
+  height: 250px;
+  width: 150px;
+
+  display: grid;
+  place-items: center;
+}
+
+.BACKGROUND {
+  &-RED {
+    background-color: tomato;
+  }
+  &-BLUE {
+    background-color: royalblue;
+  }
+  &-YELLOW {
+    background-color: yellowgreen;
+  }
+}
