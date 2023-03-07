@@ -8,12 +8,12 @@
 
 .BACKGROUND {
   &-RED {
-    background-color: tomato;
+    @apply bg-red-700;
   }
   &-BLUE {
-    background-color: royalblue;
+    @apply bg-blue-800;
   }
   &-YELLOW {
-    background-color: yellowgreen;
+    @apply bg-yellow-600;
   }
 }

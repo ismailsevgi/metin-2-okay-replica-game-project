@@ -1,3 +1,13 @@
+@font-face {
+  font-family: cardFont;
+  src: url('../src/font/AbrilFatface-Regular.ttf');
+}
+
+@font-face {
+  font-family: normalFont;
+  src: url('../src/font/TiltPrism-Regular.ttf');
+}
+
 * {
   margin: 0;
   padding: 0;

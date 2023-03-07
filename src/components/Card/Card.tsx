@@ -22,32 +22,32 @@ function Card({ card }: Props) {
           payload: card.id,
         })
       }
-      className={`cardWrapper cursor-pointer relative BACKGROUND-${card.color} h-[200px] w-[125px] rounded-[10px]`}
+      className={`cardWrapper cursor-pointer relative BACKGROUND-${card.color} h-[200px] w-[125px] rounded-[3px]`}
     >
       <h1 className=' text-white text-9xl'>{card.number}</h1>
-      <h3>CARD STATE: {card.state}</h3>
+
       <div
         onClick={() =>
           dispatch({ type: ActionTypes.DISCARD, payload: card.id })
         }
-        className='absolute   bg-red top-1 right-1 cursor-pointer'
+        className='absolute  bg-red-600 top-1 right-1 cursor-pointer'
       >
-        <svg className='w-[25px] h-[25px] border-2 border-black '>
+        <svg className='w-[30px] h-[30px]'>
           <line
             x1={'5'}
             y1='5'
-            x2={'15'}
-            y2={'15'}
+            x2={'25'}
+            y2={'25'}
             stroke='white'
-            strokeWidth={'2px'}
+            strokeWidth={'5px'}
           ></line>
           <line
-            x1={'15'}
+            x1={'25'}
             y1='5'
             x2={'5'}
-            y2={'15'}
+            y2={'25'}
             stroke='white'
-            strokeWidth={'2px'}
+            strokeWidth={'5px'}
           ></line>
         </svg>
       </div>

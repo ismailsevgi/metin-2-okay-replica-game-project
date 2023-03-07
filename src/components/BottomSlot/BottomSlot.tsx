@@ -9,8 +9,8 @@ function BottomSlot() {
   const cards_indeck = state.deck.length;
 
   return (
-    <div className='h-[250px] flex justify-between items-center bg-[#565656]'>
-      <div className='h-[250px] w-[500px] border-2  flex justify-evenly items-center '>
+    <div className='h-[250px] flex justify-between items-center bg-slate-800 font-cardFont border-t-2 border-b-2 border-orange-600'>
+      <div className='h-[250px] w-[500px] grid grid-cols-3 place-items-center '>
         {state.onBottom.map((card) => {
           return <Card key={card.id} card={card} />;
         })}
