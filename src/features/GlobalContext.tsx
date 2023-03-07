@@ -1,30 +1,15 @@
 import { createContext, useContext, useReducer, useState } from 'react';
 import { ICard } from '../constants/types';
 import _, { initial } from 'lodash';
-import { createCards } from '../utils/createCards';
-import {
-  IN_DECK,
-  USED,
-  ON_TOP,
-  TO_TOP,
-  ON_BOTTOM,
-  TO_BOTTOM,
-  DISCARDED,
-  NEW_GAME,
-  DRAW,
-} from '../constants/constants';
 
-type ACTION_TYPES =
-  | { type: typeof DISCARDED; payload: string }
-  | { type: typeof TO_BOTTOM; payload: string }
-  | { type: typeof TO_TOP; payload: string }
-  | { type: typeof NEW_GAME; payload: string }
-  | { type: typeof USED; payload: string }
-  | { type: typeof DRAW };
+import { ActionTypes, CardStates } from '../constants/constants';
+import { getNewGame } from '../utils/getNewGame';
+import { getPoints } from '../utils/getPoints';
+
+type ACTION_TYPES = { type: ActionTypes; payload: string };
 
 interface Istate {
   deck: ICard[];
-
   onTop: ICard[];
   onBottom: ICard[];
   used: ICard[];
@@ -56,99 +41,142 @@ export const useGlobalContext = () => {
 export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
   children,
 }) => {
-  let newDeck = _.shuffle([
-    ...createCards('BLUE'),
-    ...createCards('RED'),
-    ...createCards('YELLOW'),
-  ]);
+  const gameState = getNewGame();
 
-  let firstFive: ICard[] = [];
-
-  for (let i = 0; i < 5; i++) {
-    let card = newDeck.pop();
-    card!.state = 'ON_TOP';
-
-    if (card) {
-      firstFive.push(card);
-    }
-  }
-
-  const initialState: Istate = {
-    deck: newDeck,
-    onTop: [...firstFive],
-    onBottom: [],
-    used: [],
-    discarded: [],
-    point: 0,
-  };
-
-  const myReducer = (initialState: Istate, action: ACTION_TYPES) => {
+  const myReducer = (gameState: Istate, action: ACTION_TYPES) => {
     switch (action.type) {
-      case TO_BOTTOM:
-        if (initialState.onBottom.length === 3) {
+      case ActionTypes.TO_BOTTOM:
+        if (gameState.onBottom.length === 3) {
           alert(
-            `You can't put more card on bottom shelf current bottom cards: ${initialState.onBottom}`
+            `You can't put more card on bottom shelf current bottom cards: ${gameState.onBottom}`
           );
-          return initialState;
+          return gameState;
         }
 
-        console.log('!TO BOTTOM');
+        console.log('!TO BOTTOM', gameState);
 
-        const movingCard = initialState.onTop.find(
+        const movingCard = gameState.onTop.find(
           (card) => card.id === action.payload
         );
 
-        movingCard!.state = 'ON_BOTTOM';
-        return {
-          ...initialState,
-          onTop: [
-            ...initialState.onTop.filter((card) => card.id !== action.payload),
-          ],
-          onBottom: [...initialState.onBottom, movingCard],
-        };
+        if (movingCard) {
+          movingCard!.state = CardStates.ON_BOTTOM;
+          console.log('test1');
+          const newState = {
+            ...gameState,
+            onTop: [
+              ...gameState.onTop.filter((card) => card.id !== action.payload),
+            ],
+            onBottom: [...gameState.onBottom, movingCard],
+          };
+          console.log('test x');
+          //FINAL
+          if (newState.onBottom.length === 3) {
+            console.log('test 2');
+            const result = getPoints(newState.onBottom);
+            if (result.isConsecutive || result.isSameNumber) {
+              console.log('test3');
+              return {
+                ...newState,
 
-      case TO_TOP:
-        if (initialState.onTop.length === 5) {
-          alert("You can't put more card on top shelf");
-          return initialState;
+                used: [...newState.used, ...newState.onBottom],
+                onBottom: [],
+                point: newState.point + result.totalPoint,
+              };
+            } else {
+              console.log('test 4');
+              return newState;
+            }
+          } else {
+            return newState;
+          }
+        } else {
+          console.log('test2');
+          //error handler
+          return gameState;
         }
+
+      case ActionTypes.TO_TOP:
+        console.log('test 5');
+        if (gameState.onTop.length === 5) {
+          alert(
+            `You can't put more card on bottom shelf current bottom cards: ${gameState.onBottom}`
+          );
+          return gameState;
+        }
+
         console.log('!TO TOP');
-        const removedCard = initialState.onBottom.find(
+        const removedCard = gameState.onBottom.find(
           (card) => card.id === action.payload
         );
-        removedCard!.state = 'ON_TOP';
-        return {
-          ...initialState,
-          onBottom: [
-            ...initialState.onBottom.filter(
-              (card) => card.id !== action.payload
-            ),
-          ],
-          onTop: [...initialState.onTop, removedCard],
-        };
 
-        if (initialState.onTop.length === 5) {
-          alert("You can't put more card on top shelf");
-          return initialState;
+        if (removedCard) {
+          removedCard!.state = CardStates.ON_TOP;
+          console.log('test 6');
+          return {
+            ...gameState,
+            onBottom: [
+              ...gameState.onBottom.filter(
+                (card) => card.id !== action.payload
+              ),
+            ],
+            onTop: [...gameState.onTop, removedCard],
+          };
+        } else {
+          console.log('test 7');
+          return gameState;
         }
-        const cards_indeck = initialState.deck.filter(
-          (card: ICard) => card.state === 'IN_DECK'
-        );
+
+      case ActionTypes.DRAW:
+        if (gameState.onTop.length === 5) {
+          alert("You can't put more card on top shelf");
+          return gameState;
+        }
 
         console.log('DRAWED!');
+        const lastCard = gameState.deck.pop();
 
-        initialState.deck[cards_indeck.length] = {
-          ...initialState.deck[cards_indeck.length],
-          state: 'ON_TOP',
-        };
-        return initialState;
+        if (lastCard) {
+          lastCard.state = CardStates.ON_TOP;
 
-      case NEW_GAME:
-        return initialState;
+          return { ...gameState, onTop: [...gameState.onTop, lastCard] };
+        } else {
+          alert('There is no card left!');
+        }
+
+        return gameState;
+
+      case ActionTypes.NEW_GAME:
+        return getNewGame();
+
+      case ActionTypes.DISCARD:
+        const discardedCard =
+          gameState.onTop.find((card) => card.id === action.payload) ||
+          gameState.onBottom.find((card) => card.id === action.payload);
+
+        if (discardedCard) {
+          return {
+            ...gameState,
+            onBottom: [
+              ...gameState.onBottom.filter(
+                (card) => card.id !== action.payload
+              ),
+            ],
+            onTop: [
+              ...gameState.onTop.filter((card) => card.id !== action.payload),
+            ],
+            discarded: [...gameState.discarded, discardedCard],
+          };
+        } else {
+          return gameState;
+        }
+
+      default:
+        return gameState;
     }
   };
 
-  const [state, dispatch] = useReducer(myReducer, initialState);
+  const [state, dispatch] = useReducer(myReducer, gameState);
 
   const contextValue: ContextType = {
     state,
