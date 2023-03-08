@@ -1,0 +1,87 @@
+.deckWrap {
+  @apply h-[200px] mr-[23px] my-4  w-[125px] cursor-pointer bg-orange-600;
+
+  position: relative;
+  box-shadow: 1px 1px 0 0 rgb(32, 32, 32), 2px 2px 0 0 rgb(234 88 12),
+    3px 3px 0 0 rgb(32, 32, 32), 4px 4px 0 0 rgb(234 88 12), 5px 5px 0 0 black;
+  border-radius: 4px;
+
+  &-outer {
+    height: 120px;
+
+    width: 120px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+    @apply bg-slate-500;
+    overflow: hidden;
+    border: 1px solid white;
+
+    &:hover {
+      .inner {
+        animation-play-state: running;
+      }
+    }
+
+    .inner {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      top: 0px;
+      left: 0px;
+      animation-name: spinWheel;
+
+      animation-timing-function: linear;
+      animation-direction: normal;
+      animation-fill-mode: forwards;
+      animation-iteration-count: infinite;
+      animation-play-state: paused;
+      animation-duration: 6s;
+
+      border-radius: 100%;
+      overflow: hidden;
+
+      .red {
+        @apply bg-red-600;
+        width: 60px;
+        height: 120px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      .yellow {
+        @apply bg-yellow-600;
+        width: 60px;
+        height: 120px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+      }
+      .blue {
+        @apply bg-blue-800;
+        width: 120px;
+        height: 60px;
+        z-index: 2;
+        position: absolute;
+        left: 0px;
+        top: 60px;
+
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      }
+    }
+  }
+}
+
+@keyframes spinWheel {
+  0% {
+    rotate: 0deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}

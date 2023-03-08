@@ -13,23 +13,29 @@ function Card({ card }: Props) {
 
   return (
     <div
-      onClick={() =>
+      onClick={(e) => {
+        e.stopPropagation();
+
+        console.log('CARD CLICKED!');
+
         dispatch({
           type:
             card.state === CardStates.ON_TOP
               ? ActionTypes.TO_BOTTOM
               : ActionTypes.TO_TOP,
           payload: card.id,
-        })
-      }
-      className={`cardWrapper cursor-pointer relative BACKGROUND-${card.color} h-[200px] w-[125px] rounded-[3px]`}
+        });
+      }}
+      className={`cardWrapper cursor-pointer relative BACKGROUND-${card.color} max-h-[200px] max-w-[125px] rounded-[3px]`}
     >
       <h1 className=' text-white text-9xl'>{card.number}</h1>
 
       <div
-        onClick={() =>
-          dispatch({ type: ActionTypes.DISCARD, payload: card.id })
-        }
+        onClick={(e) => {
+          console.log('DISCARD CLICKED!');
+          e.stopPropagation();
+          dispatch({ type: ActionTypes.DISCARD, payload: card.id });
+        }}
         className='absolute  bg-red-600 top-1 right-1 cursor-pointer'
       >
         <svg className='w-[30px] h-[30px]'>

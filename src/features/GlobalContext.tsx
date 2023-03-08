@@ -5,6 +5,7 @@ import _, { initial } from 'lodash';
 import { ActionTypes, CardStates } from '../constants/constants';
 import { getNewGame } from '../utils/getNewGame';
 import { getPoints } from '../utils/getPoints';
+import { ToastContainer, toast } from 'react-toastify';
 
 type ACTION_TYPES = { type: ActionTypes; payload: string };
 
@@ -47,9 +48,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
     switch (action.type) {
       case ActionTypes.TO_BOTTOM:
         if (gameState.onBottom.length === 3) {
-          alert(
-            `You can't put more card on bottom shelf current bottom cards: ${gameState.onBottom}`
-          );
+          toast('LIMIT IS 3!');
           return gameState;
         }
 
@@ -61,7 +60,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
 
         if (movingCard) {
           movingCard!.state = CardStates.ON_BOTTOM;
-          console.log('test1');
+
           const newState = {
             ...gameState,
             onTop: [
@@ -75,7 +74,6 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
             console.log('test 2');
             const result = getPoints(newState.onBottom);
             if (result.isConsecutive || result.isSameNumber) {
-              console.log('test3');
               return {
                 ...newState,
 
@@ -84,24 +82,19 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
                 point: newState.point + result.totalPoint,
               };
             } else {
-              console.log('test 4');
               return newState;
             }
           } else {
             return newState;
           }
         } else {
-          console.log('test2');
           //error handler
           return gameState;
         }
 
       case ActionTypes.TO_TOP:
-        console.log('test 5');
         if (gameState.onTop.length === 5) {
-          alert(
-            `You can't put more card on bottom shelf current bottom cards: ${gameState.onBottom}`
-          );
+          toast(`TOP BOARD LIMIT IS 5!`);
           return gameState;
         }
 
@@ -112,7 +105,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
 
         if (removedCard) {
           removedCard!.state = CardStates.ON_TOP;
-          console.log('test 6');
+
           return {
             ...gameState,
             onBottom: [
@@ -123,13 +116,12 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
             onTop: [...gameState.onTop, removedCard],
           };
         } else {
-          console.log('test 7');
           return gameState;
         }
 
       case ActionTypes.DRAW:
         if (gameState.onTop.length === 5) {
-          alert("You can't put more card on top shelf");
+          toast(`THERE IS NOT ENOUGH SPACE!`);
           return gameState;
         }
 
