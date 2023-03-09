@@ -6,6 +6,10 @@ import { ActionTypes, CardStates } from '../constants/constants';
 import { getNewGame } from '../utils/getNewGame';
 import { getPoints } from '../utils/getPoints';
 import { ToastContainer, toast } from 'react-toastify';
+import { allFiles } from '../utils/sounds';
+
+const { draw2, click, switchSide, sum, sum2, newGame, newGame2, score } =
+  allFiles;
 
 type ACTION_TYPES = { type: ActionTypes; payload: string };
 
@@ -51,7 +55,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
           toast('LIMIT IS 3!');
           return gameState;
         }
-
+        switchSide.play();
         console.log('!TO BOTTOM', gameState);
 
         const movingCard = gameState.onTop.find(
@@ -71,9 +75,9 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
           console.log('test x');
           //FINAL
           if (newState.onBottom.length === 3) {
-            console.log('test 2');
             const result = getPoints(newState.onBottom);
             if (result.isConsecutive || result.isSameNumber) {
+              _.random(1) ? score.play() : sum2.play();
               return {
                 ...newState,
 
@@ -98,6 +102,8 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
           return gameState;
         }
 
+        draw2.play();
+
         console.log('!TO TOP');
         const removedCard = gameState.onBottom.find(
           (card) => card.id === action.payload
@@ -120,6 +126,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
         }
 
       case ActionTypes.DRAW:
+        click.play();
         if (gameState.onTop.length === 5) {
           toast(`THERE IS NOT ENOUGH SPACE!`);
           return gameState;
@@ -139,6 +146,9 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
         return gameState;
 
       case ActionTypes.NEW_GAME:
+        //Get random two different sounds
+        _.random(1) ? newGame2.play() : newGame.play();
+
         return getNewGame();
 
       case ActionTypes.DISCARD:
